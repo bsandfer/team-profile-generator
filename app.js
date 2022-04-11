@@ -9,6 +9,7 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const { finished } = require("stream");
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -35,6 +36,98 @@ const render = require("./lib/htmlRenderer");
 // for the provided `render` function to work! ```
 
 let employeeArray = []
+
+const finished = () => {
+    
+}
+
+const questContinue = () => {
+    inquirer.prompt([{
+        message: 'Add more team members?',
+        type: 'list',
+        choices: ['yes', 'No'],
+        name: 'yesOrNo'
+    }])
+    .then(yesOrNo => {
+        if (yesOrNo.yesOrNo === 'yes') {
+            engineerOrIntern()
+        } else {
+            finished()
+        }
+    })
+}
+
+const engineerOrIntern = () => {
+    inquirer.prompt([{
+        message: 'adding an engineer or intern?',
+        type: 'list',
+        choices: ['Engineer', 'Intern'],
+        name: 'engOrInt'
+    }])
+    .then(answer => {
+        console.log(answer)
+        if(answer.engOrInt === 'Engineer') {
+            inquirer.prompt([
+                {
+                    message: "Engineer's name?",
+                    type: 'input',
+                    name: 'name'    
+                },
+                {
+                    message: "Engineer's id?",
+                    type: 'input',
+                    name: 'id'
+                },
+                {
+                    message: "Engineer's email address?",
+                    type: 'input',
+                    name: 'email'
+                },
+                {
+                    message: "Engineer's github?",
+                    type: 'input',
+                    name: 'github'
+                }
+            ])
+            .then(engineer => {
+                console.log(engineer)
+                let newEngineer = new Engineer(engineer.name, engineer.id, engineer.email, engineer.github)
+                employeeArray.push(newEngineer)
+                console.log(employeeArray)
+                questContinue()
+            })
+        } else if (answer.engOrInt === 'Intern') {
+            inquirer.prompt([
+                {
+                    message: "Intern's name?",
+                    type: 'input',
+                    name: 'name'    
+                },
+                {
+                    message: "Intern's id?",
+                    type: 'input',
+                    name: 'id'
+                },
+                {
+                    message: "Intern's email address?",
+                    type: 'input',
+                    name: 'email'
+                },
+                {
+                    message: "Intern's school?",
+                    type: 'input',
+                    name: 'school'
+                }
+            ])
+            .then(intern => {
+                let newIntern = new Intern(intern.name, intern.id, intern.email, intern.school)
+                employeeArray.push(newIntern)
+                console.log(employeeArray)
+                questContinue()
+            })
+        }
+    })
+}
 
 inquirer.prompt([
     {
@@ -64,4 +157,6 @@ inquirer.prompt([
     let newManager = new Manager(manager.name, manager.id, manager.email, manager.officeNumber)
     employeeArray.push(newManager)
     console.log(employeeArray)
+    engineerOrIntern()
 })
+
